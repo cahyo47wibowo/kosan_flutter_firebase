@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "879572644500",
+    "project_id": "kosan-flutter",
+    "storage_bucket": "kosan-flutter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:879572644500:android:b23f651bf60f3244acfa81",
+        "android_client_info": {
+          "package_name": "com.example.kosan_flutter_firebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "879572644500-7ofq3ilqojvqi2tgsg8984p0698vijc9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtremRCeZFLiMiAxg42sOJKeK2z8FyqwU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "879572644500-7ofq3ilqojvqi2tgsg8984p0698vijc9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

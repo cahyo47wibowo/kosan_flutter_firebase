@@ -59,6 +59,13 @@ class HomeScreen extends StatelessWidget {
                     SizedBox(width: 20),
                     CityCard(City(
                         id: 4, name: 'Surabaya', imageUrl: 'assets/city4.png')),
+                    SizedBox(width: 20),
+                    CityCard(City(
+                      id: 5, name: 'Aceh', 
+                      imageUrl: 'assets/city5.png')),
+                    SizedBox(width: 20),
+                    CityCard(City(
+                      id: 6, name: 'Bogor', imageUrl: 'assets/city6.png'))
                   ],
                 ),
               ),

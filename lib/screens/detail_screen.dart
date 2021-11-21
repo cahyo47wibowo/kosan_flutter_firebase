@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kosan_flutter_firebase/models/space.dart';
 import 'package:kosan_flutter_firebase/screens/error_screen.dart';
@@ -6,12 +7,19 @@ import 'package:kosan_flutter_firebase/widgets/facility_item.dart';
 import 'package:kosan_flutter_firebase/widgets/rating_item.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class DetailScreen extends StatelessWidget {
+class DetailScreen extends StatefulWidget {
   // const DetailScreen({Key key}) : super(key: key);
 
   final Space space;
   DetailScreen(this.space);
+
+  @override
+  State<DetailScreen> createState() => _DetailScreenState();
+}
+
+class _DetailScreenState extends State<DetailScreen> {
   int indexPhotos = 0;
+  bool isWishlist = false;
   @override
   Widget build(BuildContext context) {
     // launchURL(String url)async{
@@ -25,7 +33,7 @@ class DetailScreen extends StatelessWidget {
         Navigator.push(
             context,
             MaterialPageRoute<void>(
-            builder: (BuildContext context) => const ErrorScreen()));
+                builder: (BuildContext context) => const ErrorScreen()));
       }
     }
 
@@ -36,7 +44,7 @@ class DetailScreen extends StatelessWidget {
           bottom: false,
           child: Stack(
             children: [
-              Image.network(space.imageUrl,
+              Image.network(widget.space.imageUrl,
                   width: MediaQuery.of(context).size.width,
                   height: 384,
                   fit: BoxFit.cover),
@@ -66,11 +74,11 @@ class DetailScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   //NOTE TITLE
-                                  Text(space.name,
+                                  Text(widget.space.name,
                                       style: blackTextStyle.copyWith(
                                           fontSize: 22)),
                                   Text.rich(TextSpan(
-                                      text: '\$${space.price} ',
+                                      text: '\$${widget.space.price} ',
                                       style: purpleTextStyle.copyWith(
                                           fontSize: 16),
                                       children: [
@@ -96,16 +104,15 @@ class DetailScreen extends StatelessWidget {
                               //   ],
                               // )
                               Row(
-                                children: [1,2,3,4,5].map((index) {
-                                  return Container (
-                                    margin: const EdgeInsets.only(
-                                      left: 2,
-                                    ),
-                                    child: RatingItem(
-                                      index: index,
-                                      rating: space.rating,
-                                    )
-                                  );
+                                children: [1, 2, 3, 4, 5].map((index) {
+                                  return Container(
+                                      margin: const EdgeInsets.only(
+                                        left: 2,
+                                      ),
+                                      child: RatingItem(
+                                        index: index,
+                                        rating: widget.space.rating,
+                                      ));
                                 }).toList(),
                               )
                             ],
@@ -121,17 +128,17 @@ class DetailScreen extends StatelessWidget {
                               FacilityItem(
                                 name: 'kitchen',
                                 imageUrl: 'assets/icon_kitchen.png',
-                                total: space.numberOfKitchens,
+                                total: widget.space.numberOfKitchens,
                               ),
                               FacilityItem(
                                 name: 'bedroom',
                                 imageUrl: 'assets/icon_bedroom.png',
-                                total: space.numberOfBedrooms,
+                                total: widget.space.numberOfBedrooms,
                               ),
                               FacilityItem(
                                 name: 'cupboard',
                                 imageUrl: 'assets/icon_cupboard.png',
-                                total: space.numberOfCupboards,
+                                total: widget.space.numberOfCupboards,
                               ),
                             ],
                           ),
@@ -144,7 +151,7 @@ class DetailScreen extends StatelessWidget {
                             height: 88,
                             child: ListView(
                                 scrollDirection: Axis.horizontal,
-                                children: space.photos.map((item) {
+                                children: widget.space.photos.map((item) {
                                   return Container(
                                       margin: EdgeInsets.only(right: 18),
                                       child: ClipRRect(
@@ -173,18 +180,17 @@ class DetailScreen extends StatelessWidget {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(space.address,
+                                  Text(widget.space.address,
                                       style:
                                           greyTextStyle.copyWith(fontSize: 14)),
-                                  Text(space.city,
+                                  Text(widget.space.city,
                                       style:
                                           greyTextStyle.copyWith(fontSize: 14))
                                 ],
                               ),
                               InkWell(
-                                  onTap: () { 
-                                    launchURL(
-                                        space.mapUrl);
+                                  onTap: () {
+                                    launchURL(widget.space.mapUrl);
                                     // launchURL('wkwkwkLand');
                                   },
                                   child: Image.asset('assets/btn_map.png',
@@ -198,7 +204,31 @@ class DetailScreen extends StatelessWidget {
                             height: 50,
                             child: RaisedButton(
                               onPressed: () {
-                                launchURL('tel:+${space.phone}');
+                               
+                                showCupertinoDialog<void>(
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      CupertinoAlertDialog(
+                                    title: const Text('Calling the owner'),
+                                    content: const Text(
+                                        'Are you sure?'),
+                                    actions: <CupertinoDialogAction>[
+                                      CupertinoDialogAction(
+                                        child: const Text('No'),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                      CupertinoDialogAction(
+                                        child: const Text('Call'),
+                                        isDestructiveAction: true,
+                                        onPressed: () {
+                                           launchURL('tel:+${widget.space.phone}');
+                                        },
+                                      )
+                                    ],
+                                  ),
+                                );
                                 // Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => HomeScreen()));
                               },
                               shape: RoundedRectangleBorder(
@@ -229,12 +259,29 @@ class DetailScreen extends StatelessWidget {
                           'assets/btn_back.png',
                           width: 40,
                         )),
-                    Image.asset('assets/btn_wishlist.png', width: 40)
+                    InkWell(
+                        onTap: () {
+                          _toggleWishlist();
+                        },
+                        child: isWishlist
+                            ? Image.asset('assets/btn_wishlist_active.png',
+                                width: 40)
+                            : Image.asset('assets/btn_wishlist.png', width: 40))
                   ],
                 ),
               ),
             ],
           ),
         ));
+  }
+
+  void _toggleWishlist() {
+    setState(() {
+      if (isWishlist) {
+        isWishlist = false;
+      } else {
+        isWishlist = true;
+      }
+    });
   }
 }
